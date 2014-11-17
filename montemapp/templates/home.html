@@ -50,12 +50,18 @@
 					<small>Find the best winter resorts fast and easy.</small>
 					</h1>
 
-					 <form class="form-inline" role="form">
-					  <div class="form-group">
-					    <input type="email" class="form-control get-invite" id="exampleInputEmail1" placeholder="Enter your email address">
-					  </div>
-					  <button type="submit" class="btn btn-warning btn-lg">Invite Me!</button>
-					</form>
+          {%if form%}
+          <form class="form-inline" role="form" method="post" id="keepform" action="/keepme/">
+            <div class="form-group">
+            {% csrf_token %}
+              {%for f in form%}
+                {{f}}
+              {%endfor%}
+            </div>
+            <button type="submit" class="btn btn-warning btn-lg" id="keepmebtn">Notify Me</button>
+          </form>
+          <div id="here"></div>
+          {%endif%}
 
 				</div>
 				<div class="modal fade modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -109,7 +115,7 @@
 			<div class="col-lg-4">
 				<img src="{{STATIC_URL}}img/believe.png" width="180" alt="">
 				<h4>We believe</h4>
-				<p>Our team believe that our service will inspire riders to discover new resorts and find new friends with common interest to ride.</p>
+				<p>Our team believes that our service would inspire riders to discover new resorts and find new friends with common interest to ride.</p>
 			</div><!--/col-lg-4 -->
 
 			<div class="col-lg-4">
@@ -162,12 +168,18 @@
 		<hr>
 		<div class="row centered">
 			<div class="col-lg-6 col-lg-offset-3">
-				<form class="form-inline" role="form">
-				  <div class="form-group">
-				    <input type="email" class="form-control get-invite" id="exampleInputEmail1" placeholder="Enter your email address">
-				  </div>
-				  <button type="submit" class="btn btn-warning btn-lg">Invite Me!</button>
-				</form>
+        {%if form%}
+        <form class="form-inline" role="form" method="post" id="keepform2" action="/keepme/">
+          <div class="form-group">
+          {% csrf_token %}
+            {%for f in form%}
+              {{f}}
+            {%endfor%}
+          </div>
+          <button type="submit" class="btn btn-warning btn-lg" id="keepmebtn2">Notify Me</button>
+        </form>
+        <div id="here"></div>
+        {%endif%}
 			</div>
 			<div class="col-lg-3"></div>
 		</div><!-- /row -->
@@ -217,5 +229,37 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="{{STATIC_URL}}js/jquery.min.js"></script>
     <script src="{{STATIC_URL}}js/bootstrap.min.js"></script>
+    <script src="{{STATIC_URL}}js/my.js"></script>
+      <script>
+            $(document).ready(function(){
+                var frm = $('#keepform, #keepform2');
+                var btn = $('#keepmebtn, #keemebtn2');
+                frm.submit(function () {
+                    $.ajax({
+                        type: frm.attr('method'),
+                        url: frm.attr('action'),
+                        data: frm.serialize(),
+                        beforeSend:function(){
+                            btn.button('loading');
+                        },
+                        success: function (data) {
+                            btn.button('reset');
+                              $('#here').html(data);
+                              $('.crazy').delay(4000).fadeOut();
+
+                        },
+                        error: function(data) {
+                            btn.button('reset');
+
+                            $('#here').html('<div class="alert alert-danger crazy" role="alert"><strong>Woops! Something went wrong..</strong></div>');
+                            $('.crazy').delay(4000).fadeOut();
+
+                        }
+                    });
+                    return false;
+                });
+            });
+
+        </script>
   </body>
 </html>
